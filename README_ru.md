@@ -1,5 +1,7 @@
 FormValidationAbstraction
 --
+[![Build Status](https://travis-ci.org/kosuha606/form-validation-abstraction.svg?branch=master)](https://travis-ci.org/kosuha606/form-validation-abstraction)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kosuha606/form-validation-abstraction/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kosuha606/form-validation-abstraction/?branch=master)
 
 Абстрактный механизм для выполнения валидации.
 
@@ -98,4 +100,67 @@ $jsFormsData = json_encode(FormService::getInstance()->serializeForms());
 ### Векторная форма
 Векторная форма предназначена для обработки неограниченного количества любых типов форм внутри одной формы.
 
-TODO дописать про векторные формы
+Для создания и сериализации векторной формы используется такой синтаксис:
+```php
+$vectorForm = new VectorForm();
+$vectorForm->addForm(new UserForm(), \UserHandler::class, [
+    ['name' => 'One', 'email' => 'email@email.com']
+]);
+$vectorForm->addForm(new DeliveryForm(), \DeliveryHandler::class, [
+    ['city' => 'One', 'street' => 'email@email.com']
+]);
+FormService::getInstance()
+    ->addForm($vectorForm)
+;
+$jsFormsData = json_encode(FormService::getInstance()->serializeForms());
+```
+Далее этими данными можно манипулировать в js коде на клиенте и после внесения изменений
+в данные вернуть их обратно на сервер и обработать следующим образом:
+```php
+$inputData = $_POST['vector_form'];
+$resultTuple = FormService::getInstance()->processForm(
+    new VectorForm(),
+    new VectorFormHandler(),
+    $inputData
+);
+$handlerResult = $resultTuple->getHandlerResult();
+```
+В результате в переменно `$handlerResult` будут результаты валидации каждой
+формы, которая была добавлена в векторную форму, данные о каждой форме будут 
+относится к ключу, который был указан в `FormInterface::name()`.
+
+### VectorHandlerInterface
+
+Этот интерфейс будет полезен для случаев когда нужно выполнить 
+какие то операции перед выполнение обработчиков форм, которые добавлены
+внутрь векторной формы и после выполнения этих обработчиков.
+
+Например, если с помощью векторной формы обрабатываются формы адресов
+из адресной книги, то класс-обработчик формы `AddressForm` может реализовать
+интерфейс VectorHandlerInterface и реализовать функции `beforeVectorForm` и
+`afterVectorForm` следующим образом:
+
+```php
+class AddressFormHandler implements VectorHandlerInterface
+{
+    public function beforeVectorForm() {
+        Transaction::begin();
+        
+    }
+
+    public function handle(FormInterface $form) {
+        // Обрабатываем форму, сохраняем данные
+    }
+
+    public function afterVectorForm($result) {
+        if (!$result['result']) {
+            Transaction::rollback();
+            return;
+        }
+        Transaction::commit();
+    }
+}
+```
+
+Таким образом можно удалить старые адреса, добавить новые и в случае
+каких то ошибок валидации откатить изменения в БД.
