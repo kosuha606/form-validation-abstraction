@@ -1,6 +1,6 @@
 <?php
 
-namespace app\local\bundles\publicopen\form;
+namespace kosuha606\FormValidationAbstraction\Service;
 
 use kosuha606\FormValidationAbstraction\Common\BaseObject;
 use kosuha606\FormValidationAbstraction\Service\FormServiceTupleInterface;
@@ -20,6 +20,11 @@ class FormServiceTuple extends BaseObject implements FormServiceTupleInterface
      * @var
      */
     private $error;
+
+    /**
+     * @var
+     */
+    private $handlerResult;
 
     /**
      * @return mixed
@@ -51,5 +56,21 @@ class FormServiceTuple extends BaseObject implements FormServiceTupleInterface
     public function setError($error)
     {
         $this->error = $error;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHandlerResult()
+    {
+        return $this->handlerResult;
+    }
+
+    /**
+     * @param mixed $handlerResult
+     */
+    public function setHandlerResult($handlerResult)
+    {
+        $this->handlerResult = $handlerResult;
     }
 }

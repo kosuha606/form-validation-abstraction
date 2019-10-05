@@ -5,7 +5,6 @@ namespace kosuha606\FormValidationAbstraction\Form;
 use kosuha606\FormValidationAbstraction\Common\BaseObject;
 
 /**
- * Class VectorForm
  * @package kosuha606\FormValidationAbstraction\Form
  */
 class VectorForm extends BaseObject implements FormInterface
@@ -39,6 +38,7 @@ class VectorForm extends BaseObject implements FormInterface
      * @param FormInterface $form
      * @param $handlerClass
      * @param $data
+     * @return VectorForm
      */
     public function addForm(FormInterface $form, $handlerClass, $data)
     {
@@ -47,6 +47,8 @@ class VectorForm extends BaseObject implements FormInterface
         $this->handlers[$form->name()] = $handlerClass;
         $this->formNames[$form->name()] = get_class($form);
         $this->activeForm[$form->name()] = 0;
+
+        return $this;
     }
 
     /**

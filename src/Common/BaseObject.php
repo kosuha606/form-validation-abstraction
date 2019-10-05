@@ -13,11 +13,7 @@ abstract class BaseObject
      */
     public function __construct($config = [])
     {
-        foreach ($config as $key => $value) {
-            if (\property_exists($this, $key)) {
-                $this->$key = $value;
-            }
-        }
+        $this->initProperties($config);
     }
 
     /**
@@ -33,8 +29,16 @@ abstract class BaseObject
      */
     public function setAttributes($data)
     {
-        foreach ($data as $key => $value) {
-            if (\property_exists($this, $key)) {
+        $this->initProperties($data);
+    }
+
+    private function initProperties($config)
+    {
+        foreach ($config as $key => $value) {
+            $methodName = 'set'.ucfirst($key);
+            if (method_exists($this, $methodName)) {
+                $this->$methodName($value);
+            } elseif (\property_exists($this, $key)) {
                 $this->$key = $value;
             }
         }

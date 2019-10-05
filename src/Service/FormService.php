@@ -2,10 +2,11 @@
 
 namespace kosuha606\FormValidationAbstraction\Service;
 
-use app\local\bundles\publicopen\form\FormServiceTuple;
+use Assert\AssertionFailedException;
 use kosuha606\FormValidationAbstraction\Common\Factory;
 use kosuha606\FormValidationAbstraction\Form\FormInterface;
 use kosuha606\FormValidationAbstraction\Handler\HandlerInterface;
+use ReflectionException;
 use stdClass;
 
 /**
@@ -13,13 +14,15 @@ use stdClass;
  */
 class FormService
 {
-    /** @var FormInterface[] */
-    private $forms = [];
-
     /**
-     * @var
+     * @var static
      */
     private static $instance;
+
+    /**
+     * @var FormInterface[]
+     */
+    private $forms = [];
 
     /**
      * FormService constructor.
@@ -37,6 +40,7 @@ class FormService
         if (!self::$instance) {
             self::$instance = new static();
         }
+
         return self::$instance;
     }
 
@@ -56,10 +60,20 @@ class FormService
     /**
      * @param string $name
      * @param FormInterface $form
+     * @return FormService
      */
     public function addForm(FormInterface $form)
     {
         $this->forms[$form->name()] = $form;
+
+        return $this;
+    }
+
+    public function clearForms()
+    {
+        $this->forms = [];
+
+        return $this;
     }
 
     /**
@@ -67,8 +81,8 @@ class FormService
      * @param HandlerInterface $handlerInst
      * @param array $formDataUnsafe
      * @return FormServiceTupleInterface
-     * @throws \Assert\AssertionFailedException
-     * @throws \ReflectionException
+     * @throws AssertionFailedException
+     * @throws ReflectionException
      */
     public function processForm(
         FormInterface $formInst,
@@ -78,20 +92,18 @@ class FormService
         $formInst->setAttributes($formDataUnsafe);
         $resultFlag = true;
         $errorsData = [];
+        /** @var FormServiceTuple $returnTuple */
+        $returnTuple = Factory::createObject([
+            'class' => FormServiceTuple::class
+        ]);
         if ($formInst->validate()) {
-            $handlerInst->handle($formInst);
+            $returnTuple->setHandlerResult($handlerInst->handle($formInst));
         } else {
             $resultFlag = false;
             $errorsData[$formInst->name()] = $formInst->getErrors();
         }
-        /** @var FormServiceTuple $returnTuple */
-        $returnTuple = Factory::createObject(
-            [
-                'class' => FormServiceTuple::class,
-                'result' => $resultFlag,
-                'error' => $errorsData,
-            ]
-        );
+        $returnTuple->setResult($resultFlag);
+        $returnTuple->setError($errorsData);
 
         return $returnTuple;
     }
