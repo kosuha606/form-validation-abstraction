@@ -47,10 +47,7 @@ class UserFormHandler implements HandlerInterface
 Следующий код может быть вызван в контроллере для связи формы и обработчика
 ```php
 ...
-$userForm = new UserForm([
-'name' => 'Евгений',
-'email' => 'kosuha606@gmail.com',
-]);
+$userForm = new UserForm();
 $postUnsafeData = $_POST['user_form'];
 /** @var FormServiceTupleInterface */
 $resultTuple = FormService::getInstance()
