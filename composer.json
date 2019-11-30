@@ -10,8 +10,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": ">=7.0.0",
-    "beberlei/assert": "dev-master"
+    "php": ">=7.0.0"
   },
   "autoload": {
     "psr-4": {

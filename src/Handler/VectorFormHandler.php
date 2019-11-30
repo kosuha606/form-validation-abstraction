@@ -16,7 +16,6 @@ class VectorFormHandler extends BaseObject implements HandlerInterface
     /**
      * @param FormInterface $form
      * @return array
-     * @throws \Assert\AssertionFailedException
      * @throws \ReflectionException
      */
     public function handle(FormInterface $form)
@@ -35,7 +34,6 @@ class VectorFormHandler extends BaseObject implements HandlerInterface
      * @param $formType
      * @param $handlerClass
      * @return array
-     * @throws \Assert\AssertionFailedException
      * @throws \ReflectionException
      */
     private function processOneForm($form, $formType, $handlerClass)

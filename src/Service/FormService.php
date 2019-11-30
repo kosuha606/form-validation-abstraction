@@ -2,7 +2,6 @@
 
 namespace kosuha606\FormValidationAbstraction\Service;
 
-use Assert\AssertionFailedException;
 use kosuha606\FormValidationAbstraction\Common\Factory;
 use kosuha606\FormValidationAbstraction\Form\FormInterface;
 use kosuha606\FormValidationAbstraction\Handler\HandlerInterface;
@@ -81,7 +80,6 @@ class FormService
      * @param HandlerInterface $handlerInst
      * @param array $formDataUnsafe
      * @return FormServiceTupleInterface
-     * @throws AssertionFailedException
      * @throws ReflectionException
      */
     public function processForm(
