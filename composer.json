@@ -1,7 +1,7 @@
 {
   "name": "kosuha606/form-validation-abstraction",
   "description": "Abstraction for form validation",
-  "type": "composer-plugin",
+  "type": "library",
   "authors": [
     {
       "name": "Eugene Kosuhin",
